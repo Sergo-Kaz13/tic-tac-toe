@@ -1,15 +1,25 @@
 let nextPlayer = true;
 let spoilerText = "x";
 const boardText = [];
+const resultsGame = JSON.parse(localStorage.getItem("gameResults")) || [];
+
+console.log(["resultsGame"], resultsGame);
 
 const userOneCount = document.querySelector(".user-one-count");
 const userTwoCount = document.querySelector(".user-two-count");
 const spoiler = document.querySelector(".spoiler");
 const board = document.querySelector(".board");
+const boardElements = document.getElementsByTagName("td");
+const btnSave = document.querySelector(".btn-save");
+const btnReset = document.querySelector(".btn-reset");
 
+btnSave.addEventListener("click", saveGameResults);
+btnReset.addEventListener("click", resetGameResults);
 board.addEventListener("click", handleClick);
 
 spoiler.textContent = spoilerText;
+userOneCount.textContent = resultsGame[0] || 0;
+userTwoCount.textContent = resultsGame[1] || 0;
 
 function handleClick(e) {
     let item = e.target;
@@ -29,12 +39,10 @@ function handleClick(e) {
 }
 
 function getItemsBoard() {
-    const boardElement = document.getElementsByTagName("td");
-
     boardText.length = 0;
 
-    for (const iterator of boardElement) {
-        boardText.push(iterator.innerText);
+    for (const element of boardElements) {
+        boardText.push(element.innerText);
     }
 
     getDataBoard();
@@ -95,21 +103,28 @@ function getDataBoard() {
 }
 
 function determineTheWinner(boardData) {
-    boardData.forEach((item) => {
+    boardData.every((item) => {
         if (item === "XXX") {
-            showWinner(document.querySelector(".user-one").value);
+            showWinner(document.querySelector(".user-one").value || "player 1");
             showUserCount("x");
+            return;
         } else if (item === "OOO") {
-            showWinner(document.querySelector(".user-two").value);
+            showWinner(document.querySelector(".user-two").value || "player 2");
             showUserCount("o");
+            return;
         }
+        return true;
     });
+
+    if (Array.prototype.every.call(boardElements, (el) => el.textContent)) {
+        showWinner("draw");
+    }
 }
 
 function showWinner(winner) {
     console.log(["winner"], winner);
 
-    const winnerByLetters = winner.split("");
+    const winnerByLetters = winner !== "draw" ? winner.split("") : false;
 
     const wrapper = document.querySelector(".wrapper");
     const canvasWinner = document.createElement("div");
@@ -122,12 +137,14 @@ function showWinner(winner) {
 
     btnRestart.addEventListener("click", restartGame);
 
-    titleWinner.innerHTML = `winner: `;
+    titleWinner.innerHTML = winnerByLetters ? `winner: ` : `DRAW`;
     btnRestart.innerText = "try again";
 
-    winnerByLetters.forEach((letter) => {
-        titleWinner.innerHTML += `<span>${letter}</span>`;
-    });
+    if (winnerByLetters) {
+        winnerByLetters.forEach((letter) => {
+            titleWinner.innerHTML += `<span>${letter}</span>`;
+        });
+    }
 
     canvasWinner.append(titleWinner);
     canvasWinner.append(btnRestart);
@@ -147,4 +164,18 @@ function showUserCount(user) {
     } else if (user === "o") {
         userTwoCount.textContent++;
     }
+}
+
+function saveGameResults() {
+    const playersData = [];
+    playersData.push(userOneCount.textContent, userTwoCount.textContent);
+
+    localStorage.setItem("gameResults", JSON.stringify(playersData));
+}
+
+function resetGameResults() {
+    localStorage.removeItem("gameResults");
+
+    userOneCount.textContent = 0;
+    userTwoCount.textContent = 0;
 }
