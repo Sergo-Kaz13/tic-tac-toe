@@ -1,9 +1,7 @@
 let nextPlayer = true;
-let spoilerText = "x";
+let spoilerText = "X";
 const boardText = [];
 const resultsGame = JSON.parse(localStorage.getItem("gameResults")) || [];
-
-console.log(["resultsGame"], resultsGame);
 
 const userOneCount = document.querySelector(".user-one-count");
 const userTwoCount = document.querySelector(".user-two-count");
@@ -22,17 +20,33 @@ userOneCount.textContent = resultsGame[0] || 0;
 userTwoCount.textContent = resultsGame[1] || 0;
 
 function handleClick(e) {
+    if (spoiler.classList.contains("away")) return;
+
     let item = e.target;
     if (item.localName === "td" && !item.textContent) {
         if (nextPlayer) {
-            item.innerText = "X";
+            item.innerHTML = '<div class="away">X</div>';
         } else {
-            item.innerText = "O";
+            item.innerHTML = '<div class="away">O</div>';
         }
 
+        spoiler.classList.add("away");
+
+        setTimeout(() => {
+            item.lastElementChild.classList.remove("away");
+        }, 0);
+
+        setTimeout(() => {
+            spoiler.classList.remove("away");
+            spoiler.replaceWith(spoiler);
+        }, 2100);
+
         nextPlayer = !nextPlayer;
-        spoilerText = nextPlayer ? "x" : "o";
-        spoiler.textContent = spoilerText;
+        spoilerText = nextPlayer ? "X" : "O";
+
+        setTimeout(() => {
+            spoiler.textContent = spoilerText;
+        }, 1000);
 
         getItemsBoard();
     }
@@ -105,11 +119,23 @@ function getDataBoard() {
 function determineTheWinner(boardData) {
     boardData.every((item) => {
         if (item === "XXX") {
-            showWinner(document.querySelector(".user-one").value || "player 1");
+            setTimeout(
+                () =>
+                    showWinner(
+                        document.querySelector(".user-one").value || "player 1"
+                    ),
+                1500
+            );
             showUserCount("x");
             return;
         } else if (item === "OOO") {
-            showWinner(document.querySelector(".user-two").value || "player 2");
+            setTimeout(
+                () =>
+                    showWinner(
+                        document.querySelector(".user-two").value || "player 2"
+                    ),
+                1500
+            );
             showUserCount("o");
             return;
         }
@@ -117,13 +143,11 @@ function determineTheWinner(boardData) {
     });
 
     if (Array.prototype.every.call(boardElements, (el) => el.textContent)) {
-        showWinner("draw");
+        setTimeout(() => showWinner("draw"), 1500);
     }
 }
 
 function showWinner(winner) {
-    console.log(["winner"], winner);
-
     const winnerByLetters = winner !== "draw" ? winner.split("") : false;
 
     const wrapper = document.querySelector(".wrapper");

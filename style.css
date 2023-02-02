@@ -2,6 +2,7 @@ body {
     height: 100vh;
     margin: 0;
     font-family: Verdana, Geneva, Tahoma, sans-serif;
+    overflow: hidden;
 }
 
 .wrapper {
@@ -17,6 +18,7 @@ body {
     box-shadow: inset 0 0 0 4px #fff;
     background: #000;
     border-spacing: 4px;
+    user-select: none;
 }
 
 .board td {
@@ -27,6 +29,14 @@ body {
     text-align: center;
     background: #fff;
     cursor: default;
+}
+
+.board div {
+    transition: 2s;
+}
+
+.away {
+    transform: translate(80vw, 80vh);
 }
 
 .user-info {
@@ -64,12 +74,13 @@ body {
 
 .spoiler {
     position: absolute;
-    top: 50%;
-    transform: translateY(-50%);
+    top: calc(50% - 30px);
     right: 50px;
     font-size: 50px;
     font-weight: bold;
     cursor: default;
+    transition: 1s;
+    user-select: none;
 }
 
 .canvas-winner {
@@ -130,7 +141,7 @@ body {
     text-decoration: none;
     text-shadow: 0px 1px 0px #5b8a3c;
     /* animation: light 1s linear infinite alternate 7s; */
-    animation: light 1s linear infinite alternate 1s;
+    animation: light 1s linear infinite alternate 3s;
     opacity: 0;
     height: 0;
 }
@@ -144,6 +155,35 @@ body {
 .btn-restart:active {
     position: relative;
     top: 1px;
+}
+
+.btn-reset,
+.btn-save {
+    border: 3px solid rgb(49, 48, 48);
+    padding: 5px 15px;
+    font-size: 20px;
+    font-weight: bold;
+    border-radius: 5px;
+    margin-top: 30px;
+    color: #ffffff;
+    background: rgb(49, 48, 48);
+    transition: 0.28s;
+}
+
+.btn-reset {
+    margin-left: 30px;
+}
+
+.btn-reset:hover,
+.btn-save:hover {
+    cursor: pointer;
+    background: #fff;
+    color: rgb(49, 48, 48);
+}
+
+.btn-reset:active,
+.btn-save:active {
+    transform: translate(-1px, 1px);
 }
 
 @keyframes light {
